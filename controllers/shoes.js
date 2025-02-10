@@ -88,9 +88,34 @@ router.post('/', async(req,res)=>{
 
 /**
  * @swagger
- * /api/v1/
+ * /api/v1/shoes/{id}:
+ *   put:
+ *     summary: update selected shoe from request body
+ *     parameters:
+ *       -name: id
+ *       in: path
+ *       required: true
+ *       schema:
+ *         type: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *       application/json:
+ *         schema:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: integer
+ *             name:
+ *               type: string
+ *     responses:
+ *       204:
+ *         description: Resource updated
+ *       400:
+ *         description: bad request
+ *       404:
+ *         deacription: not found
  */
-
 
 //put
 router.put('/:id', async (req,res)=>{
@@ -110,6 +135,26 @@ router.put('/:id', async (req,res)=>{
         return res.status(400).json({err:`Bad request: ${err}`})
     }
 });
+
+
+/**
+ * @swagger
+ * /api/v1/shoes/{id}:
+ *   delete:
+ *     summary: Remove selected shoe
+ *     parameters: 
+ *       - name: id
+ *         in: path
+ *         schema: 
+ *           type: integer
+ *           required: true
+ *     responses:
+ *       204:
+ *         description: Resource updated (removed)
+ *       404:
+ *         description: Not found
+ *     
+ */
 //delete
 router.delete('/:id', async (req,res)=>{
     let shoe = await Shoe.findById(req.params.id);
