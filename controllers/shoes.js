@@ -95,31 +95,40 @@ router.post('/', async(req,res)=>{
  * @swagger
  * /api/v1/shoes/{id}:
  *   put:
- *     summary: update selected shoe from request body
+ *     summary: Update selected shoe from request body
  *     parameters:
- *       -name: id
- *       in: path
- *       required: true
- *       schema:
- *         type: true
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: The unique ID of the shoe
  *     requestBody:
  *       required: true
  *       content:
- *       application/json:
- *         schema:
- *           type: object
- *           properties:
- *             id:
- *               type: integer
- *             name:
- *               type: string
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The name of the shoe
+ *               price:
+ *                 type: number
+ *                 description: The price of the shoe
+ *               category:
+ *                 type: string
+ *                 description: The category of the shoe
+ *               manufacturer:
+ *                 type: string
+ *                 description: The manufacturer of the shoe
  *     responses:
  *       204:
  *         description: Resource updated
  *       400:
- *         description: bad request
+ *         description: Bad request
  *       404:
- *         deacription: not found
+ *         description: Not found
  */
 
 //put
