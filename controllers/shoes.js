@@ -18,7 +18,7 @@ router.get('/', async (req,res)=>{
     let shoes = await Shoe.find(); //uses the shoe model to get all the shoes in the shoe collection
 
     if(!shoes){
-        return res.status(204).json({err: 'no results'})
+        return res.status(404).json({err: 'no results'})
     }
     return res.status(200).json(shoes);
 });
