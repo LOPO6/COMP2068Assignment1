@@ -15,10 +15,10 @@ const router = express.Router();
  *         description: A list of shoes
  */
 router.get('/', async (req,res)=>{
-    let shoes = await Shoe.find; //uses the shoe model to get all the shoes in the shoe collection
+    let shoes = await Shoe.find(); //uses the shoe model to get all the shoes in the shoe collection
 
     if(!shoes){
-        return res.status(404).json({err: 'not found'})
+        return res.status(204).json({err: 'no results'})
     }
     return res.status(200).json(shoes);
 });
@@ -32,7 +32,7 @@ router.get('/', async (req,res)=>{
  *       - name: id
  *         in: path
  *         schema:
- *           type: integer
+ *           type: string
  *           required: true
  *     responses:
  *       200:
@@ -42,7 +42,7 @@ router.get('/', async (req,res)=>{
  */
 //get 2
 router.get('/:id', async(req,res)=>{
-    let shoe = await Shoe.find();
+    let shoe = await Shoe.findById(req.params.id);
 
     if(!shoe){
         return res.status(404).json({msg: 'Not found'});
@@ -54,7 +54,8 @@ router.get('/:id', async(req,res)=>{
  * @swagger
  * /api/v1/shoes:
  *   post:
- *     summarry: add new cheese from POST body
+ *     summary: add new shoe from POST body
+ *     description: add a shoe to the collection
  *     requestBody:
  *       required: true
  *       content:
@@ -78,6 +79,10 @@ router.get('/:id', async(req,res)=>{
 //post
 router.post('/', async(req,res)=>{
     try{
+        if(!req.body){
+            return res.status(400).json({err: 'Invalid Request - No body'});
+        }
+
         await Shoe.create(req.body);
         return res.status(201).json();
     }
@@ -122,13 +127,15 @@ router.put('/:id', async (req,res)=>{
     try{
         let shoe = await Shoe.findById(req.params.id);
 
-        if(!cheese){
+        if(!shoe){
             return res.status(404).json({msg: "Not found"});
         }
         if(req.params.id != req.body._id){
             return res.status(400).json({msg: 'Bad request: _ids do not match'});
         }
-        await cheese.update(req.body);
+        shoe.set(req.body);
+        await shoe.save();
+        
         return res.status(204).json();
     }
     catch(err){
@@ -146,7 +153,7 @@ router.put('/:id', async (req,res)=>{
  *       - name: id
  *         in: path
  *         schema: 
- *           type: integer
+ *           type: string
  *           required: true
  *     responses:
  *       204:

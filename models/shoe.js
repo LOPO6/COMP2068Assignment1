@@ -10,13 +10,12 @@ const shoeSchema = mongoose.Schema({
         require: true
     },
     category:{
-        type: String,
-        required: true
+        type: String
     },
     manufacturer:{
-        type:String,
-        required: true
+        type: String
     }
-})
+});
 const Shoe = mongoose.model('Shoe',shoeSchema)
+
 export default Shoe;

@@ -11,6 +11,9 @@ import shoesController from './controllers/shoes.js';
 
 const app = express();
 
+
+app.use(bodyParser.json())
+
 //swagger config
 const docOptions = {
     definition: {
@@ -32,7 +35,6 @@ mongoose.connect(process.env.DB,{})
 .catch((err) => console.log(`Connection Failure: ${err}`));
 //url dispatching
 app.use('/api/v1/shoes', shoesController);
-app.use(bodyParser.json())
 
 //start web server
 app.listen(3000,()=> {
