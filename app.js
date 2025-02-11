@@ -27,7 +27,7 @@ const docOptions = {
 };
 
 const openapiSpecification = swaggerJSDoc(docOptions); //creating api specification
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification)); //setting it up
+app.use('/shoes-api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification)); //setting it up
 
 //db connect
 mongoose.connect(process.env.DB,{})
