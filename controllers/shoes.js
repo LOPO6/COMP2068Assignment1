@@ -37,6 +37,27 @@ router.get('/', async (req,res)=>{
  *     responses:
  *       200:
  *         description: Returns a single shoe
+ *         content:
+ *           application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               category:
+ *                 type: string
+ *               manufacturer:
+ *                 type: object
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *                   foundingYear:
+ *                     type: number
+ *                   
  *       404:
  *         description: Not found
  */
@@ -63,10 +84,16 @@ router.get('/:id', async(req,res)=>{
  *           schema:
  *             type: object
  *             properties:
- *               id:
- *                 type: integer
  *               name:
  *                 type: string
+ *               manufacturer:
+ *                 type: object
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *                   foundingYear:
+ *                     type: number
+
  *     responses:
  *       201:
  *         description: Resource created
@@ -83,8 +110,16 @@ router.post('/', async(req,res)=>{
             return res.status(400).json({err: 'Invalid Request - No body'});
         }
 
-        await Shoe.create(req.body);
-        return res.status(201).json();
+        const {name,price,category,manufacturer} = req.body;
+
+        //validate the manufacturer data
+        if(!manufacturer||!manufacturer.name||!manufacturer.foundingYear){
+            return res.status(400).json({err: 'Manufacturer details are invalid'});
+
+        }
+
+        const newShoe = await Shoe.create(req.body);
+        return res.status(201).json(newShoe);
     }
     catch(err){
         return res.status(400).json({err: `Bad request: ${err}`})
@@ -120,8 +155,15 @@ router.post('/', async(req,res)=>{
  *                 type: string
  *                 description: The category of the shoe
  *               manufacturer:
- *                 type: string
- *                 description: The manufacturer of the shoe
+ *                 type: object
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *                     description: The name of the manufacturer
+ *                   foundingYear:
+ *                     type: number
+ *                     description: The year that the manufacturer was founded
+ *                 
  *     responses:
  *       204:
  *         description: Resource updated
@@ -139,6 +181,15 @@ router.put('/:id', async (req,res)=>{
         if(!shoe){
             return res.status(404).json({msg: "Not found"});
         }
+
+        //if manufacturer information is entered, validate the data
+        if(req.body.manufacturer){
+            const{manufacturer} = req.body;
+            if(!manufacturer.name||manufacturer.foundingYear){
+                return res.status(400).json({err: 'Manufacturer details are incomplete'});
+            }
+        }
+
         if(req.params.id != req.body._id){
             return res.status(400).json({msg: 'Bad request: _ids do not match'});
         }

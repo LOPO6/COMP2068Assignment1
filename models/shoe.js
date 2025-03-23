@@ -13,7 +13,13 @@ const shoeSchema = mongoose.Schema({
         type: String
     },
     manufacturer:{
-        type: String
+        name: {
+            type: String, 
+            required: true
+        },  
+        foundingYear: {
+            type: Number
+        }
     }
 });
 const Shoe = mongoose.model('Shoe',shoeSchema)
