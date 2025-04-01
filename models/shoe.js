@@ -30,7 +30,8 @@ const shoeSchema = mongoose.Schema({
     manufacturer:{
         type: String
     },
-    stores: [storeSchema]
+    stores: [storeSchema],
+    default: []
 });
 
 

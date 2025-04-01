@@ -6,6 +6,9 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import mongoose from 'mongoose';
 
+//import cors
+import cors from 'cors';
+
 //controllers
 import shoesController from './controllers/shoes.js';
 
@@ -28,6 +31,15 @@ const docOptions = {
 
 const openapiSpecification = swaggerJSDoc(docOptions); //creating api specification
 app.use('/shoes-api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification)); //setting it up
+
+//cors: allow angular client http access
+app.use(cors({
+    origin: process.env.CLIENT_URL,
+    methods: 'GET,POST,PUT,DELETE,HEAD,OPTIONS',
+    credentials: true,
+    allowedHeaders: 'Content-Type, Authorization'
+}));
+
 
 //db connect
 mongoose.connect(process.env.DB,{})

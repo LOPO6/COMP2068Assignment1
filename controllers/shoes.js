@@ -15,6 +15,7 @@ const router = express.Router();
  *         description: A list of shoes
  */
 router.get('/', async (req,res)=>{
+    
     let shoes = await Shoe.find(); //uses the shoe model to get all the shoes in the shoe collection
 
     if(!shoes){
@@ -43,6 +44,8 @@ router.get('/', async (req,res)=>{
 
 //get 2
 router.get('/:id', async(req,res)=>{
+    console.log('Received ID:', req.params.id); // Log the ID
+
     let shoe = await Shoe.findById(req.params.id);
 
     if(!shoe){
@@ -50,6 +53,7 @@ router.get('/:id', async(req,res)=>{
     }
     return res.status(200).json(shoe);
 });
+
 
 /**
  * @swagger
@@ -91,28 +95,45 @@ router.get('/:id', async(req,res)=>{
  */
 
 //post
-router.post('/', async(req,res)=>{
-    try{
+router.post('/', async (req, res) => {
+    try {
+        const { name, price, category, manufacturer, stores } = req.body;
 
-        const {name,price, category, manufacturer, stores} = req.body;
-
-        //validate the stores data
-        if (!name || !price || !manufacturer || stores === undefined || stores.length === 0) {
+        // Basic validation: Check if essential fields are present
+        if (!name || !price || !manufacturer) {
             return res.status(400).json({ err: 'Missing required fields' });
         }
 
-        for (const store of stores) {
-            if (!store.name || !store.address || !store.stock) {
-                return res.status(400).json({ err: 'Invalid store data' });
+        // If stores are provided, validate them
+        if (stores !== undefined) {
+            if (!Array.isArray(stores)) {
+                return res.status(400).json({ err: 'Stores must be an array' });
+            }
+
+            // Validate store data
+            for (const store of stores) {
+                if (!store.name || !store.address || !store.stock) {
+                    return res.status(400).json({ err: 'Invalid store data' });
+                }
             }
         }
-        
 
-        const newShoe = await Shoe.create(req.body);
-        return res.status(201).json(newShoe);
-    }
-    catch(err){
-        return res.status(400).json({err: `Bad request: ${err}`})
+        // Create a new shoe object
+        const newShoe = new Shoe({
+            name,
+            price,
+            category,
+            manufacturer,
+            stores: stores || []  // If stores is undefined, default to an empty array
+        });
+
+        // Save the new shoe to the database
+        const savedShoe = await newShoe.save();
+
+        // Return the newly created shoe
+        return res.status(201).json(savedShoe);
+    } catch (err) {
+        return res.status(400).json({ err: `Bad request: ${err.message}` });
     }
 });
 
@@ -227,6 +248,9 @@ router.delete('/:id', async (req,res)=>{
     await Shoe.findByIdAndDelete(req.params.id);
     return res.status(204).json()
 })
+
+
+
 
 //make controller public to the rest of the app
 export default router;
