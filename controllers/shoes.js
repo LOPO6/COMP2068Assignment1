@@ -37,30 +37,10 @@ router.get('/', async (req,res)=>{
  *     responses:
  *       200:
  *         description: Returns a single shoe
- *         content:
- *           application/json:
- *           schema:
- *             type: object
- *             properties:
- *               id:
- *                 type: string
- *               name:
- *                 type: string
- *               price:
- *                 type: number
- *               category:
- *                 type: string
- *               manufacturer:
- *                 type: object
- *                 properties:
- *                   name:
- *                     type: string
- *                   foundingYear:
- *                     type: number
- *                   
  *       404:
  *         description: Not found
  */
+
 //get 2
 router.get('/:id', async(req,res)=>{
     let shoe = await Shoe.findById(req.params.id);
@@ -75,8 +55,8 @@ router.get('/:id', async(req,res)=>{
  * @swagger
  * /api/v1/shoes:
  *   post:
- *     summary: add new shoe from POST body
- *     description: add a shoe to the collection
+ *     summary: Add a new shoe from POST body
+ *     description: Add a shoe to the collection
  *     requestBody:
  *       required: true
  *       content:
@@ -86,37 +66,47 @@ router.get('/:id', async(req,res)=>{
  *             properties:
  *               name:
  *                 type: string
+ *               price:
+ *                 type: number
+ *               category:
+ *                 type: string
  *               manufacturer:
- *                 type: object
- *                 properties:
- *                   name:
- *                     type: string
- *                   foundingYear:
- *                     type: number
-
+ *                 type: string
+ *               stores:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                     address:
+ *                       type: string
+ *                     stock:
+ *                       type: number
  *     responses:
  *       201:
  *         description: Resource created
  *       400:
- *         description: bad request
- * 
+ *         description: Bad request
  */
-
 
 //post
 router.post('/', async(req,res)=>{
     try{
-        if(!req.body){
-            return res.status(400).json({err: 'Invalid Request - No body'});
+
+        const {name,price, category, manufacturer, stores} = req.body;
+
+        //validate the stores data
+        if (!name || !price || !manufacturer || stores === undefined || stores.length === 0) {
+            return res.status(400).json({ err: 'Missing required fields' });
         }
 
-        const {name,price,category,manufacturer} = req.body;
-
-        //validate the manufacturer data
-        if(!manufacturer||!manufacturer.name||!manufacturer.foundingYear){
-            return res.status(400).json({err: 'Manufacturer details are invalid'});
-
+        for (const store of stores) {
+            if (!store.name || !store.address || !store.stock) {
+                return res.status(400).json({ err: 'Invalid store data' });
+            }
         }
+        
 
         const newShoe = await Shoe.create(req.body);
         return res.status(201).json(newShoe);
@@ -147,25 +137,25 @@ router.post('/', async(req,res)=>{
  *             properties:
  *               name:
  *                 type: string
- *                 description: The name of the shoe
  *               price:
  *                 type: number
- *                 description: The price of the shoe
  *               category:
  *                 type: string
- *                 description: The category of the shoe
  *               manufacturer:
- *                 type: object
- *                 properties:
- *                   name:
- *                     type: string
- *                     description: The name of the manufacturer
- *                   foundingYear:
- *                     type: number
- *                     description: The year that the manufacturer was founded
- *                 
+ *                 type: string
+ *               stores:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                     address:
+ *                       type: string
+ *                     stock:
+ *                       type: number
  *     responses:
- *       204:
+ *       200:
  *         description: Resource updated
  *       400:
  *         description: Bad request
@@ -182,11 +172,15 @@ router.put('/:id', async (req,res)=>{
             return res.status(404).json({msg: "Not found"});
         }
 
-        //if manufacturer information is entered, validate the data
-        if(req.body.manufacturer){
-            const{manufacturer} = req.body;
-            if(!manufacturer.name||manufacturer.foundingYear){
-                return res.status(400).json({err: 'Manufacturer details are incomplete'});
+        const { name, price, category, manufacturer, stores } = req.body;
+        if (!name || !price || !manufacturer || stores === undefined || stores.length === 0) {
+            return res.status(400).json({ err: 'Missing required fields' });
+        }
+
+        // Validate stores array
+        for (const store of stores) {
+            if (!store.name || !store.address || !store.stock) {
+                return res.status(400).json({ err: 'Invalid store data' });
             }
         }
 
