@@ -15,7 +15,12 @@ import shoesController from './controllers/shoes.js';
 const app = express();
 
 
-app.use(bodyParser.json())
+app.use(bodyParser.json());
+
+
+ // get public path for angular client app
+ const __dirname = path.resolve();
+ app.use(express.static(`${__dirname}/public`));
 
 //swagger config
 const docOptions = {
@@ -41,12 +46,18 @@ app.use(cors({
 }));
 
 
-//db connect
+
 mongoose.connect(process.env.DB,{})
 .then((res)=>console.log("Connected to MongoDB"))
 .catch((err) => console.log(`Connection Failure: ${err}`));
 //url dispatching
 app.use('/api/v1/shoes', shoesController);
+app.use('*', (req, res) => {
+    res.sendFile(`${__dirname}/public/index.html`);
+});
+
+
+
 
 //start web server
 app.listen(3000,()=> {
