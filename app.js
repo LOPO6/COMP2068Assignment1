@@ -55,7 +55,7 @@ mongoose.connect(process.env.DB,{})
 //url dispatching
 app.use('/api/v1/shoes', shoesController);
 app.use('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(`${__dirname}/public/index.html`);
 });
 
 
