@@ -9,6 +9,8 @@ import mongoose from 'mongoose';
 //import cors
 import cors from 'cors';
 
+import path from 'path';
+
 //controllers
 import shoesController from './controllers/shoes.js';
 
