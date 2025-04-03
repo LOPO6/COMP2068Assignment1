@@ -52,11 +52,11 @@ app.use(cors({
 mongoose.connect(process.env.DB,{})
 .then((res)=>console.log("Connected to MongoDB"))
 .catch((err) => console.log(`Connection Failure: ${err}`));
+
+
 //url dispatching
 app.use('/api/v1/shoes', shoesController);
-app.use('*', (req, res) => {
-    res.sendFile(`${__dirname}/public/index.html`);
-});
+
 
 
 
