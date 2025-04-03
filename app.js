@@ -21,8 +21,8 @@ app.use(bodyParser.json());
 
 
  // get public path for angular client app
- const __dirname = path.resolve();
- app.use(express.static(`${__dirname}/public`));
+const __dirname = path.resolve();
+app.use(express.static(`${__dirname}/public`));
 
 //swagger config
 const docOptions = {
@@ -57,8 +57,8 @@ mongoose.connect(process.env.DB,{})
 //url dispatching
 app.use('/api/v1/shoes', shoesController);
 app.use('*', (req, res) => {
-    res.sendFile(`${__dirname}/public/index.html`);
-});
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  });
 
 
 
